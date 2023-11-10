@@ -1,0 +1,26 @@
+{{define "start"}}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hangman Game - Start</title>
+</head>
+<body>
+    <h1>Hangman Game</h1>
+    <form action="/start" method="post">
+        <label for="name">Enter your name:</label>
+        <input type="text" id="name" name="name" required>
+        <br>
+        <label for="difficulty">Select difficulty:</label>
+        <select id="difficulty" name="difficulty">
+            <option value="random">Aleatoire</option>
+            <option value="easy">Facile</option>
+            <option value="medium">Moyen</option>
+            <option value="hard">Difficile</option>
+            <option value="halloween">Halloween</option> 
+        </select>
+        <br>
+        <button type="submit">Start Game</button>
+    </form>
+</body>
+</html>
+{{end}}

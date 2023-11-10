@@ -1,0 +1,19 @@
+{{define "index"}}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hangman Game</title>
+</head>
+<body>
+    <h1>Hangman Game</h1>
+    <p>Player: {{.PlayerName}}</p>
+    <p>Current State: {{join .CurrentState " "}}</p>
+    <p>Incorrect Guesses: {{join .IncorrectGuesses ", "}}</p>
+    <form action="/guess" method="post">
+        <label for="guess">Guess a letter:</label>
+        <input type="text" id="guess" name="guess" maxlength="1" required>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
+{{end}}
