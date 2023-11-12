@@ -8,25 +8,25 @@
     <h1>Hangman Game</h1>
     <p>Player: {{.PlayerName}}</p>
     {{if eq .IncorrectGuessCount 0}}
-    <img src="/images/hangman_-1" alt="0 Incorrect Guess">
+    <img src="/static/hangman_-1.png" alt="0 Incorrect Guess">
     {{ else if eq .IncorrectGuessCount 1 }}
-    <img src="/images/hangman_0.png" alt="1 Incorrect Guess">
+    <img src="/static/hangman_0.png" alt="1 Incorrect Guess">
     {{ else if eq .IncorrectGuessCount 2 }}
-    <img src="/images/hangman_1.png" alt="2 Incorrect Guesses">
+    <img src="/static/hangman_1.png" alt="2 Incorrect Guesses">
     {{ else if eq .IncorrectGuessCount 3 }}
-    <img src="/images/hangman_2.png" alt="3 Incorrect Guesses">
+    <img src="/static/hangman_2.png" alt="3 Incorrect Guesses">
     {{ else if eq .IncorrectGuessCount 4 }}
-    <img src="/images/hangman_3.png" alt="4 Incorrect Guesses">
+    <img src="/static/hangman_3.png" alt="4 Incorrect Guesses">
     {{ else if eq .IncorrectGuessCount 5 }}
-    <img src="/images/hangman_4.png" alt="5 Incorrect Guesses">
+    <img src="/static/hangman_4.png" alt="5 Incorrect Guesses">
     {{ else if eq .IncorrectGuessCount 6 }}
-    <img src="/images/hangman_5.png" alt="6 Incorrect Guesses">
+    <img src="/static/hangman_5.png" alt="6 Incorrect Guesses">
     {{ else if eq .IncorrectGuessCount 7 }}
-    <img src="/images/hangman_6.png" alt="7 Incorrect Guesses">
+    <img src="/static/hangman_6.png" alt="7 Incorrect Guesses">
     {{ else if eq .IncorrectGuessCount 8 }}
-    <img src="/images/hangman_7.png" alt="8 Incorrect Guesses">
+    <img src="/static/hangman_7.png" alt="8 Incorrect Guesses">
 {{ else }}
-    <img src="/images/default.png" alt="Default Image">
+    <img src="/static/cheat.jpg" alt="Default Image">
 {{ end }}
     <p>Current State: {{ join .CurrentState " " }}</p>
     <p>Incorrect Guesses: {{join .IncorrectGuesses ", "}}</p>

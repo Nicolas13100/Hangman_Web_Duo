@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -21,21 +22,44 @@ var (
 )
 
 func main() {
+
+	// Set up your other handlers
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/start", startHandler)
 	http.HandleFunc("/guess", guessHandler)
+	http.HandleFunc("/lost", lostHandler)
+	http.HandleFunc("/win", winHandler)
+	http.HandleFunc("/restart", restartHandler)
 
-	// Serve static files
-	rootDoc, _ := os.Getwd()
-	fileserver := http.FileServer(http.Dir(rootDoc + "/Assets"))
-	http.Handle("/images/", http.StripPrefix("/images/", fileserver))
+	// Serve static files from the "static" directory
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
+	// Print statement indicating server is running
 	fmt.Println("Server is running on :8080")
-	http.ListenAndServe(":8080", nil)
+
+	// Start the server
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if !started {
 		renderTemplate(w, "start", nil)
+		return
+	}
+
+	// Check if all letters have been guessed
+	if !strings.Contains(strings.Join(currentState, ""), "_") {
+		// If all letters have been guessed, redirect to the win page
+		http.Redirect(w, r, "/win", http.StatusSeeOther)
+		return
+	}
+
+	// Check if the player has reached the maximum number of incorrect guesses
+	if incorrectGuessCount >= 8 {
+		// If yes, redirect the player to the lost page
+		http.Redirect(w, r, "/lost", http.StatusSeeOther)
 		return
 	}
 
@@ -219,4 +243,32 @@ func selectRandomWord(wordList []string) string {
 	randSource := rand.NewSource(time.Now().UnixNano())
 	randGenerator := rand.New(randSource)
 	return wordList[randGenerator.Intn(len(wordList))]
+}
+
+func lostHandler(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "lost", nil)
+}
+
+func winHandler(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		PlayerName string
+		// other fields...
+	}{
+		PlayerName: playerName,
+		// other field values...
+	}
+	renderTemplate(w, "win", data)
+}
+
+// Add a restartHandler to reset the game
+func restartHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	resetGame()
+	resetCurrentState()
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
