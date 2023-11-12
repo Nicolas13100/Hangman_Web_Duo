@@ -11,12 +11,13 @@ import (
 )
 
 var (
-	wordToGuess      string
-	currentState     []string
-	incorrectGuesses []string
-	playerName       string
-	started          bool
-	guessedLetters   = make(map[string]bool)
+	wordToGuess         string
+	currentState        []string
+	incorrectGuesses    []string
+	playerName          string
+	started             bool
+	guessedLetters      = make(map[string]bool)
+	incorrectGuessCount int
 )
 
 func main() {
@@ -24,6 +25,10 @@ func main() {
 	http.HandleFunc("/start", startHandler)
 	http.HandleFunc("/guess", guessHandler)
 
+	// Serve static files
+	rootDoc, _ := os.Getwd()
+	fileserver := http.FileServer(http.Dir(rootDoc + "/Assets"))
+	http.Handle("/images/", http.StripPrefix("/images/", fileserver))
 	fmt.Println("Server is running on :8080")
 	http.ListenAndServe(":8080", nil)
 }
@@ -42,15 +47,17 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
-		Started          bool
-		PlayerName       string
-		CurrentState     []string
-		IncorrectGuesses []string
+		Started             bool
+		PlayerName          string
+		CurrentState        []string
+		IncorrectGuesses    []string
+		IncorrectGuessCount int
 	}{
-		Started:          started,
-		PlayerName:       playerName,
-		CurrentState:     getCurrentState(),
-		IncorrectGuesses: incorrectGuesses,
+		Started:             started,
+		PlayerName:          playerName,
+		CurrentState:        getCurrentState(),
+		IncorrectGuesses:    incorrectGuesses,
+		IncorrectGuessCount: incorrectGuessCount,
 	}
 
 	err = tmpl.ExecuteTemplate(w, "index", data)
@@ -113,6 +120,7 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 		updateState(guess)
 	} else {
 		incorrectGuesses = append(incorrectGuesses, guess)
+		incorrectGuessCount++
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -120,6 +128,7 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 
 func resetGame() {
 	// Reset game-related variables
+	incorrectGuessCount = 0
 	incorrectGuesses = nil
 	started = false
 	guessedLetters = make(map[string]bool)
