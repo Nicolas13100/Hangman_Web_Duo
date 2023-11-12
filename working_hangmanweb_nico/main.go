@@ -3,25 +3,21 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"math/rand"
 	"net/http"
+	"os"
 	"strings"
+	"time"
 )
 
 var (
-	wordToGuess      = "hangman"
-	currentState     = make([]string, len(wordToGuess))
+	wordToGuess      string
+	currentState     []string
 	incorrectGuesses []string
 	playerName       string
 	started          bool
 	guessedLetters   = make(map[string]bool)
 )
-
-func init() {
-	// Initialize the current state with underscores
-	for i := range currentState {
-		currentState[i] = "_"
-	}
-}
 
 func main() {
 	http.HandleFunc("/", indexHandler)
@@ -53,7 +49,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}{
 		Started:          started,
 		PlayerName:       playerName,
-		CurrentState:     currentState,
+		CurrentState:     getCurrentState(),
 		IncorrectGuesses: incorrectGuesses,
 	}
 
@@ -75,10 +71,19 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseForm()
 	playerName = r.Form.Get("name")
-	//difficulty := r.Form.Get("difficulty")
+	difficulty := r.Form.Get("difficulty")
 	// Do something with the difficulty
+	// Load the word list based on difficulty
+	wordList, err := loadWordList(difficulty)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 
+	// Randomly select a word from the list
+	wordToGuess = selectRandomWord(wordList)
 	started = true
+	resetCurrentState()
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -88,11 +93,8 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Assuming you want to get the player's name from a form field named "name"
-	playerName = r.Form.Get("name")
-
 	r.ParseForm()
-	guess := strings.ToLower(r.Form.Get("guess"))
+	guess := strings.ToUpper(r.Form.Get("guess"))
 
 	if len(guess) != 1 || !isLetter(guess) {
 		http.Error(w, "Invalid Guess", http.StatusBadRequest)
@@ -118,23 +120,33 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 
 func resetGame() {
 	// Reset game-related variables
-	currentState = make([]string, len(wordToGuess))
 	incorrectGuesses = nil
 	started = false
 	guessedLetters = make(map[string]bool)
+}
 
+func resetCurrentState() {
 	// Initialize the current state with underscores
+	currentState = make([]string, len(wordToGuess))
 	for i := range currentState {
 		currentState[i] = "_"
 	}
 }
 
 func updateState(guess string) {
-	for i, char := range wordToGuess {
-		if string(char) == guess {
+	wordRunes := []rune(wordToGuess)
+	guessRune := []rune(guess)[0]
+
+	for i, char := range wordRunes {
+		if char == guessRune {
+			fmt.Printf("Updating currentState[%d] to %s\n", i, guess)
 			currentState[i] = guess
 		}
 	}
+}
+
+func getCurrentState() []string {
+	return currentState
 }
 
 func isLetter(s string) bool {
@@ -160,4 +172,42 @@ func renderTemplate(w http.ResponseWriter, tmplName string, data interface{}) {
 // Template function to join slices
 func join(s []string, sep string) string {
 	return strings.Join(s, sep)
+}
+
+// Helper function to load word list based on difficulty
+func loadWordList(difficulty string) ([]string, error) {
+	// Construct the file path based on the difficulty level
+	filePath := fmt.Sprintf("Librairie/%s.txt", difficulty)
+
+	// Read the content of the file
+	content, err := os.ReadFile(filePath)
+	fmt.Println(err)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read file: %v", err)
+	}
+
+	// Split the content into lines to get individual words
+	wordList := strings.Split(string(content), "\n")
+
+	// Filter out empty lines
+	var filteredWordList []string
+	for _, word := range wordList {
+		// Skip empty lines
+		if word != "" {
+			filteredWordList = append(filteredWordList, word)
+		}
+	}
+
+	if len(filteredWordList) == 0 {
+		return nil, fmt.Errorf("no words found in the file")
+	}
+
+	return filteredWordList, nil
+}
+
+// Helper function to select a random word from the list
+func selectRandomWord(wordList []string) string {
+	randSource := rand.NewSource(time.Now().UnixNano())
+	randGenerator := rand.New(randSource)
+	return wordList[randGenerator.Intn(len(wordList))]
 }
