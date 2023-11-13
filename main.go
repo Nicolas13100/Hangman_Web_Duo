@@ -161,6 +161,7 @@ func resetGame() {
 func resetCurrentState() {
 	// Initialize the current state with underscores
 	currentState = make([]string, len(wordToGuess))
+	fmt.Println(len(currentState))
 	for i := range currentState {
 		currentState[i] = "_"
 	}
