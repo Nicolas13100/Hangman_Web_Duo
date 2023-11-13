@@ -246,7 +246,14 @@ func selectRandomWord(wordList []string) string {
 }
 
 func lostHandler(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "lost", nil)
+	data := struct {
+		WordToGuess string
+		// other fields...
+	}{
+		WordToGuess: wordToGuess,
+		// other field values...
+	}
+	renderTemplate(w, "lost", data)
 }
 
 func winHandler(w http.ResponseWriter, r *http.Request) {
