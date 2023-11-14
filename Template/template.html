@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Hangman Game</h1>
-    <p>Player: {{.PlayerName}}</p><p>Difficulty: {{.Difficulty}}</p>
+    <p>Player: {{.PlayerName}}</p><p>Difficulty: {{.Difficulty}}</p><p>Points: {{.Points}}</p>
     {{if eq .IncorrectGuessCount 0}}
     <img src="/static/hangman_-1.png" alt="0 Incorrect Guess">
     {{ else if eq .IncorrectGuessCount 1 }}
@@ -30,7 +30,6 @@
 {{ end }}
     <p>Current State: {{ join .CurrentState " " }}</p>
     <p>Incorrect Guesses: {{join .IncorrectGuesses ", "}}</p>
-    <p>Incorrect Guess Count: {{.IncorrectGuessCount}}</p>
     <form action="/guess" method="post">
         <label for="guess">Guess a letter:</label>
         <input type="text" id="guess" name="guess" maxlength="25" required>

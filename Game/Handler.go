@@ -18,6 +18,7 @@ var (
 	incorrectGuessCount int
 	difficulty          string
 	invalidguess        string
+	points              int
 )
 
 func RUN() {
@@ -42,6 +43,9 @@ func RUN() {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	switch difficulty {
+
+	}
 	if !started {
 		renderTemplate(w, "start", nil)
 		return
@@ -76,6 +80,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		IncorrectGuessCount int
 		Difficulty          string
 		Invalidguess        string
+		Points              int
 	}{
 		Started:             started,
 		PlayerName:          playerName,
@@ -84,6 +89,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		IncorrectGuessCount: incorrectGuessCount,
 		Difficulty:          difficulty,
 		Invalidguess:        invalidguess,
+		Points:              points,
 	}
 
 	err = tmpl.ExecuteTemplate(w, "index", data)
