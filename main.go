@@ -19,6 +19,7 @@ var (
 	started             bool
 	guessedLetters      = make(map[string]bool)
 	incorrectGuessCount int
+	difficulty          string
 )
 
 func main() {
@@ -63,7 +64,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.New("index").Funcs(template.FuncMap{"join": join}).ParseFiles("template.html")
+	tmpl, err := template.New("index").Funcs(template.FuncMap{"join": join}).ParseFiles("Template/template.html")
 	if err != nil {
 		fmt.Println("Error parsing template:", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -76,12 +77,14 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		CurrentState        []string
 		IncorrectGuesses    []string
 		IncorrectGuessCount int
+		Difficulty          string
 	}{
 		Started:             started,
 		PlayerName:          playerName,
 		CurrentState:        getCurrentState(),
 		IncorrectGuesses:    incorrectGuesses,
 		IncorrectGuessCount: incorrectGuessCount,
+		Difficulty:          difficulty,
 	}
 
 	err = tmpl.ExecuteTemplate(w, "index", data)
@@ -102,7 +105,7 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseForm()
 	playerName = r.Form.Get("name")
-	difficulty := r.Form.Get("difficulty")
+	difficulty = r.Form.Get("difficulty")
 	// Do something with the difficulty
 	// Load the word list based on difficulty
 	wordList, err := loadWordList(difficulty)
@@ -188,7 +191,7 @@ func isLetter(s string) bool {
 }
 
 func renderTemplate(w http.ResponseWriter, tmplName string, data interface{}) {
-	tmpl, err := template.New(tmplName).Funcs(template.FuncMap{"join": join}).ParseFiles(tmplName + ".html")
+	tmpl, err := template.New(tmplName).Funcs(template.FuncMap{"join": join}).ParseFiles("Template/" + tmplName + ".html")
 	if err != nil {
 		fmt.Println("Error parsing template:", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

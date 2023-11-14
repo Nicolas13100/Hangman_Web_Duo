@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Hangman Game</h1>
-    <p>Player: {{.PlayerName}}</p>
+    <p>Player: {{.PlayerName}}</p><p>Difficulty: {{.Difficulty}}</p>
     {{if eq .IncorrectGuessCount 0}}
     <img src="/static/hangman_-1.png" alt="0 Incorrect Guess">
     {{ else if eq .IncorrectGuessCount 1 }}
