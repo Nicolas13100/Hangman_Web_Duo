@@ -20,6 +20,7 @@ var (
 	guessedLetters      = make(map[string]bool)
 	incorrectGuessCount int
 	difficulty          string
+	invalidguess        string
 )
 
 func main() {
@@ -78,6 +79,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		IncorrectGuesses    []string
 		IncorrectGuessCount int
 		Difficulty          string
+		Invalidguess        string
 	}{
 		Started:             started,
 		PlayerName:          playerName,
@@ -85,6 +87,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		IncorrectGuesses:    incorrectGuesses,
 		IncorrectGuessCount: incorrectGuessCount,
 		Difficulty:          difficulty,
+		Invalidguess:        invalidguess,
 	}
 
 	err = tmpl.ExecuteTemplate(w, "index", data)
@@ -131,7 +134,8 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 	guess := strings.ToUpper(r.Form.Get("guess"))
 
 	if len(guess) != 1 || !isLetter(guess) {
-		http.Error(w, "Invalid Guess", http.StatusBadRequest)
+		invalidguess = "Invalid guess"
+		http.Redirect(w, r, "/", http.StatusMovedPermanently)
 		return
 	}
 
