@@ -177,9 +177,11 @@ func winHandler(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		PlayerName string
 		// other fields...
+		WordToGuess string
 	}{
 		PlayerName: playerName,
 		// other field values...
+		WordToGuess: wordToGuess,
 	}
 	renderTemplate(w, "win", data)
 }
