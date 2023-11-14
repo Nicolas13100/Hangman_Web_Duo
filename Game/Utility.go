@@ -44,7 +44,17 @@ func getCurrentState() []string {
 }
 
 func isLetter(s string) bool {
-	return len(s) == 1 && ((s >= "a" && s <= "z") || (s >= "A" && s <= "Z"))
+	if len(s) == 0 {
+		return false // Return false for an empty string
+	}
+
+	for _, char := range s {
+		if !((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z')) {
+			return false // If any character is not a letter, return false
+		}
+	}
+
+	return true // If all characters are letters, return true
 }
 
 func renderTemplate(w http.ResponseWriter, tmplName string, data interface{}) {

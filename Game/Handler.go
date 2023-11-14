@@ -129,7 +129,7 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	guess := strings.ToUpper(r.Form.Get("guess"))
 
-	if len(guess) != 1 || !isLetter(guess) {
+	if len(guess) >= 1 && !isLetter(guess) {
 		invalidguess = "Invalid guess"
 		http.Redirect(w, r, "/", http.StatusMovedPermanently)
 		return
@@ -137,21 +137,28 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 		invalidguess = ""
 	}
 
-	if guessedLetters[guess] {
-		// If the letter has already been guessed, do nothing
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
+	if len(guess) == 1 {
+		if guessedLetters[guess] {
+			// If the letter has already been guessed, do nothing
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
 
-	guessedLetters[guess] = true
+		guessedLetters[guess] = true
 
-	if strings.Contains(wordToGuess, guess) {
-		updateState(guess)
+		if strings.Contains(wordToGuess, guess) {
+			updateState(guess)
+		} else {
+			incorrectGuesses = append(incorrectGuesses, guess)
+			incorrectGuessCount++
+		}
 	} else {
-		incorrectGuesses = append(incorrectGuesses, guess)
-		incorrectGuessCount++
+		if guess == wordToGuess {
+			http.Redirect(w, r, "/win", http.StatusSeeOther)
+		} else {
+			incorrectGuessCount += 2
+		}
 	}
-
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
