@@ -137,6 +137,8 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 		invalidguess = "Invalid guess"
 		http.Redirect(w, r, "/", http.StatusMovedPermanently)
 		return
+	} else {
+		invalidguess = ""
 	}
 
 	if guessedLetters[guess] {
