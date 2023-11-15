@@ -121,3 +121,54 @@ func selectRandomWord(wordList []string) string {
 	randGenerator := rand.New(randSource)
 	return wordList[randGenerator.Intn(len(wordList))]
 }
+
+func calculateScoreWin() {
+	switch difficulty {
+	case "Dictionnaire":
+		score += 10
+	case "Facile":
+		score += 5
+	case "Moyen":
+		score += 15
+	case "Diffile":
+		score += 20
+	case "Halloween":
+		score += 10
+	default:
+		fmt.Println("Can't find difficulty")
+	}
+}
+
+func calculateScoreLose() {
+	switch difficulty {
+	case "Dictionnaire":
+		score -= 5
+	case "Facile":
+		score -= 1
+	case "Moyen":
+		score -= 7
+	case "Diffile":
+		score -= 10
+	case "Halloween":
+		score -= 5
+	default:
+		fmt.Println("Can't find difficulty")
+	}
+}
+
+func calculateScoreFinal() {
+
+	score = score + 5*countUnderscores(currentState)
+}
+
+func countUnderscores(arr []string) int {
+	count := 0
+
+	for _, val := range arr {
+		if val == "_" {
+			count++
+		}
+	}
+
+	return count
+}

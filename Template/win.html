@@ -13,6 +13,7 @@
     <div class="container">
         <h1>Congratulations, {{.PlayerName}}!</h1>
         <p>You've successfully guessed {{.WordToGuess}}</p>
+        <p>Your final score is : {{.Score}}</p>
         <form action="/restart" method="post">
             <button type="submit">Restart Game</button>
         </form>

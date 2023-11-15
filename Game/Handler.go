@@ -19,6 +19,7 @@ var (
 	difficulty          string
 	invalidguess        string
 	points              int
+	score               int
 )
 
 func RUN() {
@@ -81,6 +82,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		Difficulty          string
 		Invalidguess        string
 		Points              int
+		Score               int
 	}{
 		Started:             started,
 		PlayerName:          playerName,
@@ -90,6 +92,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		Difficulty:          difficulty,
 		Invalidguess:        invalidguess,
 		Points:              points,
+		Score:               score,
 	}
 
 	err = tmpl.ExecuteTemplate(w, "index", data)
@@ -154,12 +157,15 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 
 		if strings.Contains(wordToGuess, guess) {
 			updateState(guess)
+			calculateScoreWin()
 		} else {
 			incorrectGuesses = append(incorrectGuesses, guess)
 			incorrectGuessCount++
+			calculateScoreLose()
 		}
 	} else {
 		if guess == wordToGuess {
+			calculateScoreFinal()
 			http.Redirect(w, r, "/win", http.StatusSeeOther)
 		} else {
 			incorrectGuessCount += 2
@@ -184,10 +190,12 @@ func winHandler(w http.ResponseWriter, r *http.Request) {
 		PlayerName string
 		// other fields...
 		WordToGuess string
+		Score       int
 	}{
 		PlayerName: playerName,
 		// other field values...
 		WordToGuess: wordToGuess,
+		Score:       score,
 	}
 	renderTemplate(w, "win", data)
 }

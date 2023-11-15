@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Hangman Game</h1>
-    <p>Player: {{.PlayerName}}</p><p>Difficulty: {{.Difficulty}}</p><p>Points: {{.Points}}</p>
+    <p>Player: {{.PlayerName}}</p><p>Difficulty: {{.Difficulty}}</p><p>Score: {{.Score}}</p>
     <img src="/static/hangman_{{.IncorrectGuessCount}}.png" alt="{{.IncorrectGuessCount}} Incorrect Guess">
     <p>Current State: {{ join .CurrentState " " }}</p>
     <p>Incorrect Guesses: {{join .IncorrectGuesses ", "}}</p>
