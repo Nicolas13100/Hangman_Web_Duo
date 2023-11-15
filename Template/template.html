@@ -7,27 +7,7 @@
 <body>
     <h1>Hangman Game</h1>
     <p>Player: {{.PlayerName}}</p><p>Difficulty: {{.Difficulty}}</p><p>Points: {{.Points}}</p>
-    {{if eq .IncorrectGuessCount 0}}
-    <img src="/static/hangman_-1.png" alt="0 Incorrect Guess">
-    {{ else if eq .IncorrectGuessCount 1 }}
-    <img src="/static/hangman_0.png" alt="1 Incorrect Guess">
-    {{ else if eq .IncorrectGuessCount 2 }}
-    <img src="/static/hangman_1.png" alt="2 Incorrect Guesses">
-    {{ else if eq .IncorrectGuessCount 3 }}
-    <img src="/static/hangman_2.png" alt="3 Incorrect Guesses">
-    {{ else if eq .IncorrectGuessCount 4 }}
-    <img src="/static/hangman_3.png" alt="4 Incorrect Guesses">
-    {{ else if eq .IncorrectGuessCount 5 }}
-    <img src="/static/hangman_4.png" alt="5 Incorrect Guesses">
-    {{ else if eq .IncorrectGuessCount 6 }}
-    <img src="/static/hangman_5.png" alt="6 Incorrect Guesses">
-    {{ else if eq .IncorrectGuessCount 7 }}
-    <img src="/static/hangman_6.png" alt="7 Incorrect Guesses">
-    {{ else if eq .IncorrectGuessCount 8 }}
-    <img src="/static/hangman_7.png" alt="8 Incorrect Guesses">
-{{ else }}
-    <img src="/static/cheat.jpg" alt="Default Image">
-{{ end }}
+    <img src="/static/hangman_{{.IncorrectGuessCount}}.png" alt="{{.IncorrectGuessCount}} Incorrect Guess">
     <p>Current State: {{ join .CurrentState " " }}</p>
     <p>Incorrect Guesses: {{join .IncorrectGuesses ", "}}</p>
     <form action="/guess" method="post">
