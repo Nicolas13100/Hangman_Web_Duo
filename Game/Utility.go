@@ -25,6 +25,12 @@ func resetCurrentState() {
 	for i := range currentState {
 		currentState[i] = "_"
 	}
+	numIterations := int(float64(len(wordToGuess)) * 0.35)
+	for i := 0; i < numIterations; i++ {
+		randIndex := rand.Intn(len(wordToGuess))
+		letter := string(wordToGuess[randIndex])
+		updateState(letter)
+	}
 }
 
 func updateState(guess string) {
