@@ -44,6 +44,7 @@ func RUN() {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+
 	switch difficulty {
 
 	}
@@ -94,7 +95,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		Points:              points,
 		Score:               score,
 	}
-
+	fmt.Println(data.IncorrectGuessCount)
 	err = tmpl.ExecuteTemplate(w, "index", data)
 	if err != nil {
 		fmt.Println("Error executing template:", err)
@@ -104,6 +105,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func startHandler(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
@@ -175,6 +177,7 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func lostHandler(w http.ResponseWriter, r *http.Request) {
+
 	data := struct {
 		WordToGuess string
 		// other fields...
@@ -186,6 +189,7 @@ func lostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func winHandler(w http.ResponseWriter, r *http.Request) {
+
 	data := struct {
 		PlayerName string
 		// other fields...

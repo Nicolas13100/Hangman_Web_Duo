@@ -11,11 +11,17 @@ import (
 )
 
 func resetGame() {
-	// Reset game-related variables
-	incorrectGuessCount = 0
-	incorrectGuesses = nil
+	wordToGuess = ""
+	currentState = []string{}
+	incorrectGuesses = []string{}
+	playerName = ""
 	started = false
 	guessedLetters = make(map[string]bool)
+	incorrectGuessCount = 0
+	difficulty = ""
+	invalidguess = ""
+	points = 0
+	score = 0
 }
 
 func resetCurrentState() {
