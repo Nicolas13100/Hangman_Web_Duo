@@ -109,6 +109,7 @@ func loadWordList(difficulty string) ([]string, error) {
 	// Filter out empty lines
 	var filteredWordList []string
 	for _, word := range wordList {
+		word = strings.TrimSpace(word)
 		// Skip empty lines
 		if word != "" {
 			filteredWordList = append(filteredWordList, word)
