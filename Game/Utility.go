@@ -28,6 +28,7 @@ func resetCurrentState() {
 	// Initialize the current state with underscores
 	currentState = make([]string, len(wordToGuess))
 	fmt.Println(len(currentState))
+	fmt.Println(len(wordToGuess))
 	for i := range currentState {
 		currentState[i] = "_"
 	}
