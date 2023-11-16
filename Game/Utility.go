@@ -16,6 +16,7 @@ func resetGame() {
 	incorrectGuesses = []string{}
 	playerName = ""
 	started = false
+	lost = false
 	guessedLetters = make(map[string]bool)
 	incorrectGuessCount = 0
 	difficulty = ""
