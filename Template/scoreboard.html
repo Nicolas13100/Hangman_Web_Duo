@@ -1,0 +1,26 @@
+{{define "scoreboard"}}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/path/to/script.js"></script>
+    <title>Congratulations!</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/path/to/script.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Congratulations, {{.PlayerName}}!</h1>
+        <p>Your best score was : {{.BestScore}}</p>
+        <p>Your total score is : {{.TotalScore}}</p>
+        <form action="/dashboard" method="post">
+            <button type="submit">Back</button>
+        </form>
+    </div>
+</body>
+
+</html>
+{{end}}

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"sync"
 )
 
 var (
@@ -14,15 +15,42 @@ var (
 	incorrectGuesses    []string
 	playerName          string
 	started             bool
+	logged              bool
 	guessedLetters      = make(map[string]bool)
 	incorrectGuessCount int
 	difficulty          string
 	invalidguess        string
 	points              int
 	score               int
+	users               = make(map[string]User) // Map to store users
+	username            string
+	password            string
+	globalData          = make(map[string]UserData)
+	mutex               sync.Mutex
 )
 
+// User struct to represent user information
+type User struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+// UserData structure for individual user data
+type UserData struct {
+	BestScore  int `json:"best_score"`
+	TotalScore int `json:"total_score"`
+}
+
+type GlobalData map[string]UserData
+
 func RUN() {
+	// Load users from a file on startup
+	if err := loadUsersFromFile("users.json"); err != nil {
+		panic(err)
+	}
+	// Initialize global data
+	globalData = make(GlobalData)
+
 	// Set up your other handlers
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/start", startHandler)
@@ -30,6 +58,15 @@ func RUN() {
 	http.HandleFunc("/lost", lostHandler)
 	http.HandleFunc("/win", winHandler)
 	http.HandleFunc("/restart", restartHandler)
+	http.HandleFunc("/register", registerHandler)
+	http.HandleFunc("/confirmRegister", confirmRegisterHandler)
+	http.HandleFunc("/login", loginHandler)
+	http.HandleFunc("/successLogin", successLoginHandler)
+	http.HandleFunc("/logout", logoutHandler)
+	http.HandleFunc("/dashboard", dashboardHandler)
+	http.HandleFunc("/scoreboard", scoreboardHandler)
+	http.HandleFunc("/gestion", gestionHandler)
+	http.HandleFunc("/changeLogin", changeLoginHandler)
 
 	// Serve static files from the "static" directory
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
@@ -45,11 +82,18 @@ func RUN() {
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 
-	switch difficulty {
-
+	if !logged {
+		renderTemplate(w, "Login", nil)
+		return
 	}
+
 	if !started {
-		renderTemplate(w, "start", nil)
+		autoNaming := struct {
+			Name string
+		}{
+			Name: username,
+		}
+		renderTemplate(w, "start", autoNaming)
 		return
 	}
 
@@ -75,6 +119,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
+		Logged              bool
 		Started             bool
 		PlayerName          string
 		CurrentState        []string
@@ -85,6 +130,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		Points              int
 		Score               int
 	}{
+		Logged:              logged,
 		Started:             started,
 		PlayerName:          playerName,
 		CurrentState:        getCurrentState(),
@@ -127,6 +173,7 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 	// Randomly select a word from the list
 	wordToGuess = selectRandomWord(wordList)
 	started = true
+	logged = true
 	resetCurrentState()
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -189,6 +236,20 @@ func lostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func winHandler(w http.ResponseWriter, r *http.Request) {
+	err0 := UpdateAndSaveGlobalData(username, score)
+	if err0 != nil {
+		http.Error(w, "Failed to save Global data", http.StatusInternalServerError)
+		// Log the error or handle it appropriately
+		log.Println("Error saving Global data:", err0)
+		return
+	}
+	err := SaveUserData()
+	if err != nil {
+		http.Error(w, "Failed to save user data", http.StatusInternalServerError)
+		// Log the error or handle it appropriately
+		log.Println("Error saving user data:", err)
+		return
+	}
 
 	data := struct {
 		PlayerName string
@@ -214,5 +275,115 @@ func restartHandler(w http.ResponseWriter, r *http.Request) {
 	resetGame()
 	resetCurrentState()
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+}
+
+func registerHandler(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "Register", nil)
+}
+
+func confirmRegisterHandler(w http.ResponseWriter, r *http.Request) {
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+
+	// Check if username already exists
+	if _, exists := users[username]; exists {
+		http.Error(w, "Username already exists", http.StatusConflict)
+		return
+	}
+
+	hashedPassword := hashPassword(password)
+	users[username] = User{Username: username, Password: hashedPassword}
+
+	// Save users to a file
+	if err := saveUsersToFile("users.json"); err != nil {
+		http.Error(w, "Failed to register user", http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
+}
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	// Load users from a file on startup
+	if err := loadUsersFromFile("users.json"); err != nil {
+		panic(err)
+	}
+	renderTemplate(w, "Login", nil)
+}
+
+func successLoginHandler(w http.ResponseWriter, r *http.Request) {
+	logged = true
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	username = r.FormValue("username")
+	password = r.FormValue("password")
+
+	user, exists := users[username]
+	if !exists || !checkPasswordHash(password, user.Password) {
+		fmt.Println("Invalid username or password")
+		return
+	}
+
+	// Successfully logged in
+	// Handle further operations (e.g., setting session, redirecting, etc.)
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+
+}
+
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
+	resetUserValue()
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
+}
+
+func dashboardHandler(w http.ResponseWriter, r *http.Request) {
+	autoData := struct {
+		Name string
+	}{
+		Name: username,
+	}
+	renderTemplate(w, "dashboard", autoData)
+}
+
+func scoreboardHandler(w http.ResponseWriter, r *http.Request) {
+	BestScore, Score, err := extractVariablesFromJSONFile()
+	if err != nil {
+		fmt.Print("extract not working")
+	}
+	data := struct {
+		PlayerName string
+		BestScore  int
+		TotalScore int
+	}{
+		PlayerName: username,
+		BestScore:  BestScore,
+		TotalScore: Score,
+	}
+	renderTemplate(w, "scoreboard", data)
+}
+
+func gestionHandler(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		PlayerName string
+	}{
+		PlayerName: username,
+	}
+	renderTemplate(w, "gestion", data)
+}
+
+func changeLoginHandler(w http.ResponseWriter, r *http.Request) {
+	oldpassword := r.FormValue("oldpassword")
+	fmt.Println(oldpassword)
+	newpassword := r.FormValue("newpassword")
+	fmt.Println(newpassword)
+	err := updateUserCredentials(username, oldpassword, newpassword)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	fmt.Println("Password updated successfully.")
+	resetUserValue()
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }

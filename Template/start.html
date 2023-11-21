@@ -3,16 +3,14 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/path/to/script.js"></script>
     <title>Hangman Game - Start</title>
     <link rel="stylesheet" href="/static/style.css">
-    <script src="/path/to/script.js"></script>
 </head>
 <body>
     <h1>Hangman Game</h1>
     <form action="/start" method="post">
         <label for="name">Enter your name:</label>
-        <input type="text" id="name" name="name" required>
+        <input type="text" id="name" name="name" value="{{.Name}}" required>
         <br>
         <label for="difficulty">Select difficulty:</label>
         <select id="difficulty" name="difficulty">
@@ -24,6 +22,9 @@
         </select>
         <br>
         <button type="submit">Start Game</button>
+    </form>
+        <form action="/logout" method="post">
+        <button type="submit">Disconnection</button>
     </form>
 </body>
 </html>

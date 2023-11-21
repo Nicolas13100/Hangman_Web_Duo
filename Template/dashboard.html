@@ -1,0 +1,26 @@
+{{define "dashboard"}}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game - dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Dashboard</h1>
+User : {{.Name}} 
+    <form action="/" method="post">
+        <button type="submit">Start Hangman Game</button>
+    </form>
+    <form action="/scoreboard" method="post">
+        <button type="submit">Show player score</button>
+    </form>
+    <form action="/gestion" method="post">
+        <button type="submit">Modify account</button>
+    </form>
+    <form action="/logout" method="post">
+        <button type="submit">Logout/button>
+    </form>
+</body>
+</html>
+{{end}}
