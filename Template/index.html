@@ -9,7 +9,8 @@
 </head>
 <body>
     <h1>Hangman Game</h1>
-    <p>Player: {{.PlayerName}}</p><p>Difficulty: {{.Difficulty}}</p><p>Score: {{.Score}}</p><p>Nombre d'erreur: {{.IncorrectGuessCount}}</p>
+    <div class="haut">
+    <p>Player: {{.PlayerName}}</p><p>Difficulty: {{.Difficulty}}</p><p>Score: {{.Score}}</p><p>Nombre dessai restant : {{.TriesLeft}}</p></div>
     <img src="/static/hangman_{{.IncorrectGuessCount}}.png" alt="{{.IncorrectGuessCount}} Incorrect Guess">
     <p>Word to find: {{ join .CurrentState " " }}</p>
     <p>Incorrect Guesses: {{join .IncorrectGuesses ", "}}</p>

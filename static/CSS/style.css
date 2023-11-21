@@ -1,0 +1,79 @@
+/* Reset default margin and padding for all elements */
+* {
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+}
+
+/* Basic body styling */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  color: #333;
+  line-height: 1.6;
+  padding: 20px;
+}
+
+/* Styling for Hangman game title */
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Player information styling */
+p {
+  margin-bottom: 10px;
+}
+
+/* Hangman image styling */
+img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+/* Styling for word to find */
+p:nth-of-type(4) {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+/* Form styling */
+form {
+  text-align: center;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input[type="text"] {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  padding: 8px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Error message styling */
+p:last-child {
+  color: red;
+  font-style: italic;
+  margin-top: 10px;
+}

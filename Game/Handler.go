@@ -112,13 +112,13 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.New("index").Funcs(template.FuncMap{"join": join}).ParseFiles("Template/template.html")
+	tmpl, err := template.New("index").Funcs(template.FuncMap{"join": join}).ParseFiles("Template/index.html")
 	if err != nil {
 		fmt.Println("Error parsing template:", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
+	lefts := 8 - incorrectGuessCount
 	data := struct {
 		Logged              bool
 		Started             bool
@@ -130,6 +130,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		Invalidguess        string
 		Points              int
 		Score               int
+		TriesLeft           int
 	}{
 		Logged:              logged,
 		Started:             started,
@@ -141,6 +142,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		Invalidguess:        invalidguess,
 		Points:              points,
 		Score:               score,
+		TriesLeft:           lefts,
 	}
 	fmt.Println(data.IncorrectGuessCount)
 	err = tmpl.ExecuteTemplate(w, "index", data)
