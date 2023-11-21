@@ -16,6 +16,7 @@ var (
 	playerName          string
 	started             bool
 	logged              bool
+	lost                bool
 	guessedLetters      = make(map[string]bool)
 	incorrectGuessCount int
 	difficulty          string
