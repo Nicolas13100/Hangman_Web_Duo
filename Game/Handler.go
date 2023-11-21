@@ -213,7 +213,7 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 			calculateScoreLose()
 		}
 	} else {
-		if guess == wordToGuess {
+		if guess == wordToGuess && !lost {
 			calculateScoreFinal()
 			http.Redirect(w, r, "/win", http.StatusSeeOther)
 		} else {
@@ -224,7 +224,7 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func lostHandler(w http.ResponseWriter, r *http.Request) {
-
+	lost = true
 	data := struct {
 		WordToGuess string
 		// other fields...
