@@ -14,13 +14,18 @@
         <label for="name">Enter your name:</label>
         <input type="text" id="name" name="name" value="{{.Name}}" required>
         <br>
+        <label for="language">Select language:</label>
+        <select id="language" name="language">
+            <option value="Fr">Français</option>
+            <option value="En">English</option>
+        </select>
         <label for="difficulty">Select difficulty:</label>
         <select id="difficulty" name="difficulty">
             <option value="Dictionnaire">Dictionnaire</option>
             <option value="Facile">Facile</option>
             <option value="Moyen">Moyen</option>
             <option value="Difficile">Difficile</option>
-            <option value="Halloween">Halloween</option> 
+            <option value="Christmas">Christmas</option> 
         </select>
         <br>
         <button type="submit" class="transitionButton">Start Game</button>

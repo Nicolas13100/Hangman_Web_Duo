@@ -27,6 +27,14 @@ body {
   /* Optional: Set width and height for the element to make the background visible */
   height: 100%; /* Set width as needed */
 }
+.gif {
+  background-image: url(/static/congratulations.gif); /* Replace 'path/to/your/image.jpg' with your image file path */
+  background-repeat: no-repeat;
+  background-size: cover;
+  /* Optional: Set width and height for the element to make the background visible */
+  height: 100%; /* Set width as needed */
+}
+
 
 /* Styling for Hangman game title */
 h1 {
@@ -80,7 +88,7 @@ input[type="text"] {
 
 button {
   padding: 8px 20px;
-  font-size: 16px;
+  font-size: 20px;
   background-color: black;
   color: #fff;
   border: none;
@@ -138,6 +146,10 @@ color: green;
   justify-content: space-around;
   align-items: flex-start;
   margin-bottom: 20px; /* Add margin bottom for spacing */
+}
+
+.white{
+  color: white;
 }
 
 .head button {

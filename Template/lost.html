@@ -10,9 +10,39 @@
 </head>
 <body> 
     <h1>Game Over</h1>
-    <img src="/static/hangman_8.png" alt="8 Incorrect Guesses">
-    <p>The word to guess was {{.WordToGuess}}</p>
-    <p>Sorry, you've reached the maximum number of incorrect guesses. Better luck next time!</p>
+    
+    {{if eq .Difficulty "Dictionnaire"}}
+        <img src="/static/gotcha-bitch.gif" alt="Dictionnaire Image">
+        <div class="imblind">
+        <p>The word to guess was {{.WordToGuess}}</p>
+        <p>Could have done better!</p>
+        </div>
+    {{else if eq .Difficulty "Facile"}}
+        <img src="/static/noob-risitas.gif" alt="Facile Image">
+        <div class="imblind">
+        <p>The word to guess was {{.WordToGuess}}</p>
+        <p>Sorry nooby. Better luck next time!</p>
+        </div>
+    {{else if eq .Difficulty "Moyen"}}
+        <img src="/static/STOOBID.gif" alt="Moyen Image">
+        <div class="imblind">
+        <p>The word to guess was {{.WordToGuess}}</p>
+        <p>Even Steven He say it!</p>
+        </div>
+    {{else if eq .Difficulty "Difficile"}}
+        <img src="/static/failure.gif" alt="Difficile Image">
+        <div class="imblind">
+        <p>The word to guess was {{.WordToGuess}}</p>
+        <p>You disapointed Steve's dad!</p>
+        </div>
+    {{else if eq .Difficulty "Christmas"}}
+        <img src="/static/sighs-in-christmas-sigh.gif" alt="Halloween Image">
+        <div class="imblind">
+        <p>The word to guess was {{.WordToGuess}}</p>
+        <p>Mariah carey think you could have done better.</p>
+        </div>
+    {{end}}
+    
     <form action="/restart" method="post">
         <button type="submit" class="transitionButton">Restart Game</button>
     </form>

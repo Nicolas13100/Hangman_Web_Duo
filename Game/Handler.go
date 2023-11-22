@@ -21,6 +21,7 @@ var (
 	guessedLetters      = make(map[string]bool)
 	incorrectGuessCount int
 	difficulty          string
+	language            string
 	invalidguess        string
 	points              int
 	score               int
@@ -178,9 +179,10 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	playerName = r.Form.Get("name")
 	difficulty = r.Form.Get("difficulty")
+	language = r.Form.Get("language")
 	// Do something with the difficulty
 	// Load the word list based on difficulty
-	wordList, err := loadWordList(difficulty)
+	wordList, err := loadWordList(language, difficulty)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
@@ -266,9 +268,11 @@ func lostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	data := struct {
 		WordToGuess string
+		Difficulty  string
 		// other fields...
 	}{
 		WordToGuess: wordToGuess,
+		Difficulty:  difficulty,
 		// other field values...
 	}
 	renderTemplate(w, "lost", data)
@@ -303,11 +307,13 @@ func winHandler(w http.ResponseWriter, r *http.Request) {
 		// other fields...
 		WordToGuess string
 		Score       int
+		Difficulty  string
 	}{
 		PlayerName: playerName,
 		// other field values...
 		WordToGuess: wordToGuess,
 		Score:       score,
+		Difficulty:  difficulty,
 	}
 	renderTemplate(w, "win", data)
 }

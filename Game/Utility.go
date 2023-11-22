@@ -104,9 +104,9 @@ func join(s []string, sep string) string {
 }
 
 // Helper function to load word list based on difficulty
-func loadWordList(difficulty string) ([]string, error) {
+func loadWordList(language, difficulty string) ([]string, error) {
 	// Construct the file path based on the difficulty level
-	filePath := fmt.Sprintf("Librairie/%s.txt", difficulty)
+	filePath := fmt.Sprintf("Librairie/%s/%s.txt", language, difficulty)
 
 	// Read the content of the file
 	content, err := os.ReadFile(filePath)
@@ -152,7 +152,7 @@ func calculateScoreWin() {
 		score += 15
 	case "Diffile":
 		score += 20
-	case "Halloween":
+	case "Christmas":
 		score += 10
 	default:
 		fmt.Println("Can't find difficulty")
