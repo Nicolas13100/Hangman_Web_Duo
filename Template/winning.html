@@ -1,0 +1,25 @@
+{{define "win"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/CSS/style.css">
+    <script src="/static/JS/script.js"></script>
+    <title>Congratulations!</title>
+</head>
+<body class="gif2">
+   <div class="white">
+        <h1>Congratulations, you got trolled!</h1>
+        <div class="imblind">
+        <p>You've unsuccessfully tried to cheat</p>
+        <p>Your final score is not yours to decide</p>
+    </div>
+</div>
+        <form action="/restart" method="post">
+            <button type="submit" class="transitionButton">Restart Game</button>
+        </form>
+   
+</body>
+</html>
+{{end}}

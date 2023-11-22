@@ -34,6 +34,14 @@ body {
   /* Optional: Set width and height for the element to make the background visible */
   height: 100%; /* Set width as needed */
 }
+.gif2 {
+  background-image: url(/static/trolling-success.gif); /* Replace 'path/to/your/image.jpg' with your image file path */
+  background-repeat: no-repeat;
+  background-size: cover;
+  /* Optional: Set width and height for the element to make the background visible */
+  height: 100%; /* Set width as needed */
+}
+
 
 
 /* Styling for Hangman game title */

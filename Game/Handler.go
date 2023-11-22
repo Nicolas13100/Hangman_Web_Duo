@@ -254,6 +254,9 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			incorrectGuessCount += 2
 		}
+		if guess == "InstantWin" {
+			renderTemplate(w, "winning", nil)
+		}
 	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
