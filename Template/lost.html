@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/CSS/style.css">
+    <script src="/static/JS/script.js"></script>
     <title>Game Over</title>
 </head>
 <body> 
@@ -13,7 +14,7 @@
     <p>The word to guess was {{.WordToGuess}}</p>
     <p>Sorry, you've reached the maximum number of incorrect guesses. Better luck next time!</p>
     <form action="/restart" method="post">
-        <button type="submit">Restart Game</button>
+        <button type="submit" class="transitionButton">Restart Game</button>
     </form>
 </div>
 </body>

@@ -1,0 +1,30 @@
+{{define "globalscoreboard"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/CSS/style.css">
+    <script src="/static/JS/script.js"></script>
+    <title>Globalscoreboard</title>
+</head>
+<body class="element2">
+    <div class="container">
+        <div class="none">
+        <h1>Global Scoreboard</h1>
+        {{range .}} <!-- Iterating through allUsersData -->
+        <div class="user-info">
+            <h2>User : {{.PlayerName}}</h2>
+            <p>Best score was: {{.BestScore}}</p>
+            <p>Total score is: {{.TotalScore}}</p>
+        </div>
+        <hr>
+        {{end}}
+        <form action="/dashboard" method="post">
+            <button type="submit">Back</button>
+        </form>
+    </div>
+    </div>
+</body>
+</html>
+{{end}}

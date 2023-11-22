@@ -17,6 +17,7 @@ var (
 	started             bool
 	logged              bool
 	lost                bool
+	win                 bool
 	guessedLetters      = make(map[string]bool)
 	incorrectGuessCount int
 	difficulty          string
@@ -66,6 +67,7 @@ func RUN() {
 	http.HandleFunc("/logout", logoutHandler)
 	http.HandleFunc("/dashboard", dashboardHandler)
 	http.HandleFunc("/scoreboard", scoreboardHandler)
+	http.HandleFunc("/globalscoreboard", globalscoreboardHandler)
 	http.HandleFunc("/gestion", gestionHandler)
 	http.HandleFunc("/changeLogin", changeLoginHandler)
 
@@ -82,7 +84,6 @@ func RUN() {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-
 	if !logged {
 		renderTemplate(w, "Login", nil)
 		return
@@ -94,12 +95,12 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		}{
 			Name: username,
 		}
-		renderTemplate(w, "start", autoNaming)
+		renderTemplate(w, "dashboard", autoNaming)
 		return
 	}
-
 	// Check if all letters have been guessed
-	if !strings.Contains(strings.Join(currentState, ""), "_") {
+	if stringifyStringSlice(currentState) == wordToGuess && wordToGuess != "" {
+		win = true
 		// If all letters have been guessed, redirect to the win page
 		http.Redirect(w, r, "/win", http.StatusSeeOther)
 		return
@@ -107,6 +108,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check if the player has reached the maximum number of incorrect guesses
 	if incorrectGuessCount >= 8 {
+		lost = true
 		// If yes, redirect the player to the lost page
 		http.Redirect(w, r, "/lost", http.StatusSeeOther)
 		return
@@ -144,7 +146,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		Score:               score,
 		TriesLeft:           lefts,
 	}
-	fmt.Println(data.IncorrectGuessCount)
 	err = tmpl.ExecuteTemplate(w, "index", data)
 	if err != nil {
 		fmt.Println("Error executing template:", err)
@@ -154,13 +155,25 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func startHandler(w http.ResponseWriter, r *http.Request) {
-
+	if !logged {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	if !started {
+		resetGame()
+		started = true
+		autoNaming := struct {
+			Name string
+		}{
+			Name: username,
+		}
+		renderTemplate(w, "start", autoNaming)
+		return
+	}
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
-
-	resetGame()
 
 	r.ParseForm()
 	playerName = r.Form.Get("name")
@@ -175,13 +188,29 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Randomly select a word from the list
 	wordToGuess = selectRandomWord(wordList)
-	started = true
+
 	logged = true
 	resetCurrentState()
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func guessHandler(w http.ResponseWriter, r *http.Request) {
+	if !logged {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	if !started {
+		http.Redirect(w, r, "/index", http.StatusSeeOther)
+		return
+	}
+	if win {
+		http.Redirect(w, r, "/win", http.StatusSeeOther)
+		return
+	}
+	if lost {
+		http.Redirect(w, r, "/lost", http.StatusSeeOther)
+		return
+	}
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
@@ -227,7 +256,14 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func lostHandler(w http.ResponseWriter, r *http.Request) {
-	lost = true
+	if !logged {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	if !started {
+		http.Redirect(w, r, "/index", http.StatusSeeOther)
+		return
+	}
 	data := struct {
 		WordToGuess string
 		// other fields...
@@ -239,6 +275,14 @@ func lostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func winHandler(w http.ResponseWriter, r *http.Request) {
+	if !logged {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	if !started {
+		http.Redirect(w, r, "/index", http.StatusSeeOther)
+		return
+	}
 	err0 := UpdateAndSaveGlobalData(username, score)
 	if err0 != nil {
 		http.Error(w, "Failed to save Global data", http.StatusInternalServerError)
@@ -270,8 +314,22 @@ func winHandler(w http.ResponseWriter, r *http.Request) {
 
 // Add a restartHandler to reset the game
 func restartHandler(w http.ResponseWriter, r *http.Request) {
+	if !logged {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	if !started {
+		http.Redirect(w, r, "/index", http.StatusSeeOther)
+		return
+	}
+
+	if !win && !lost {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
@@ -286,6 +344,10 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func confirmRegisterHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
@@ -317,7 +379,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 func successLoginHandler(w http.ResponseWriter, r *http.Request) {
 	logged = true
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
@@ -338,10 +400,14 @@ func successLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	resetUserValue()
-	http.Redirect(w, r, "/login", http.StatusSeeOther)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func dashboardHandler(w http.ResponseWriter, r *http.Request) {
+	if !logged {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 	autoData := struct {
 		Name string
 	}{
@@ -351,6 +417,10 @@ func dashboardHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func scoreboardHandler(w http.ResponseWriter, r *http.Request) {
+	if !logged {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 	BestScore, Score, err := extractVariablesFromJSONFile()
 	if err != nil {
 		fmt.Print("extract not working")
@@ -367,7 +437,48 @@ func scoreboardHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "scoreboard", data)
 }
 
+func globalscoreboardHandler(w http.ResponseWriter, r *http.Request) {
+	if !logged {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	userDataList, err := globalextractVariablesFromJSONFile()
+	if err != nil {
+		fmt.Println("Error extracting data:", err)
+		// Handle the error (e.g., return an error response to the client)
+		return
+	}
+
+	// Create a slice to hold data for all users
+	var allUsersData []struct {
+		PlayerName string
+		BestScore  int
+		TotalScore int
+	}
+
+	// Process data for each user
+	for playerName, userData := range userDataList {
+		userDataEntry := struct {
+			PlayerName string
+			BestScore  int
+			TotalScore int
+		}{
+			PlayerName: playerName,
+			BestScore:  userData.BestScore,
+			TotalScore: userData.TotalScore,
+		}
+
+		// Append data for each user to the slice
+		allUsersData = append(allUsersData, userDataEntry)
+	}
+	renderTemplate(w, "globalscoreboard", allUsersData)
+}
+
 func gestionHandler(w http.ResponseWriter, r *http.Request) {
+	if !logged {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 	data := struct {
 		PlayerName string
 	}{
@@ -377,10 +488,12 @@ func gestionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func changeLoginHandler(w http.ResponseWriter, r *http.Request) {
+	if !logged {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 	oldpassword := r.FormValue("oldpassword")
-	fmt.Println(oldpassword)
 	newpassword := r.FormValue("newpassword")
-	fmt.Println(newpassword)
 	err := updateUserCredentials(username, oldpassword, newpassword)
 	if err != nil {
 		fmt.Println("Error:", err)
@@ -388,5 +501,5 @@ func changeLoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("Password updated successfully.")
 	resetUserValue()
-	http.Redirect(w, r, "/login", http.StatusSeeOther)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

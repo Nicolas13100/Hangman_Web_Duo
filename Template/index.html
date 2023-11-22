@@ -5,21 +5,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/CSS/style.css">
+    <script src="/static/JS/script.js"></script>
     <title>Hangman Game</title>
 </head>
 <body>
     <h1>Hangman Game</h1>
-    <div class="haut">
-    <p>Player: {{.PlayerName}}</p><p>Difficulty: {{.Difficulty}}</p><p>Score: {{.Score}}</p><p>Nombre dessai restant : {{.TriesLeft}}</p></div>
+    <div class="imblind">
+        <div class="haut">
+            <div class="div1">
+                <p>Player: {{.PlayerName}}</p>
+            </div>
+            <div class="div2">
+                <p>Difficulty: {{.Difficulty}}</p>
+            </div>
+            <div class="div3">
+                <p>Score: {{.Score}}</p>
+            </div>
+        </div>
+</div>
+    <p>Nombre dessai restant : {{.TriesLeft}}</p>
     <img src="/static/hangman_{{.IncorrectGuessCount}}.png" alt="{{.IncorrectGuessCount}} Incorrect Guess">
     <p>Word to find: {{ join .CurrentState " " }}</p>
     <p>Incorrect Guesses: {{join .IncorrectGuesses ", "}}</p>
     <form action="/guess" method="post">
         <label for="guess">Guess a letter:</label>
         <input type="text" id="guess" name="guess" maxlength="25" required>
-        <button type="submit">Submit</button>
+        <button type="submit" class="transitionButton">Submit</button>
     </form>
+    <div class="invalid">
     <p>{{.Invalidguess}}</p>
+    </div>
 </body>
 </html>
 {{end}}

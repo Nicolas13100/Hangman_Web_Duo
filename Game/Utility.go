@@ -22,6 +22,7 @@ func resetGame() {
 	playerName = ""
 	started = false
 	lost = false
+	win = false
 	guessedLetters = make(map[string]bool)
 	incorrectGuessCount = 0
 	difficulty = ""
@@ -58,7 +59,6 @@ func updateState(guess string) {
 
 	for i, char := range wordRunes {
 		if char == guessRune {
-			fmt.Printf("Updating currentState[%d] to %s\n", i, guess)
 			currentState[i] = guess
 		}
 	}
@@ -366,6 +366,31 @@ func extractVariablesFromJSONFile() (int, int, error) {
 	return user.BestScore, user.TotalScore, nil
 }
 
+func globalextractVariablesFromJSONFile() (GlobalData, error) {
+	filePath := "global_data.json"
+
+	// Read JSON file
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	byteValue, err := io.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+
+	// Unmarshal JSON data into the struct
+	var globalData GlobalData
+	err = json.Unmarshal(byteValue, &globalData)
+	if err != nil {
+		return nil, err
+	}
+
+	return globalData, nil
+}
+
 func updateUserCredentials(name, oldPassword, newPassword string) error {
 	// Read the JSON file into memory
 	raw, err := os.ReadFile("users.json")
@@ -440,4 +465,12 @@ func hashPassword(password string) string {
 func checkPasswordHash(password, hash string) bool {
 	hashedPassword := hashPassword(password)
 	return hashedPassword == hash
+}
+
+func stringifyStringSlice(strSlice []string) string {
+	var result string
+	for _, s := range strSlice {
+		result += s
+	}
+	return result
 }
