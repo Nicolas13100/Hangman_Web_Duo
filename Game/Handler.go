@@ -247,15 +247,16 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 			calculateScoreLose()
 		}
 	} else {
+		fmt.Print(guess)
 		if guess == wordToGuess && !lost {
 			calculateScoreFinal()
 			win = true
 			http.Redirect(w, r, "/win", http.StatusSeeOther)
+		} else if guess == "INSTANTWIN" {
+			fmt.Println("ok")
+			renderTemplate(w, "winning", nil)
 		} else {
 			incorrectGuessCount += 2
-		}
-		if guess == "InstantWin" {
-			renderTemplate(w, "winning", nil)
 		}
 	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)

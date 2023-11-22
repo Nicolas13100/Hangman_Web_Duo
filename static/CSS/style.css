@@ -37,9 +37,16 @@ body {
 .gif2 {
   background-image: url(/static/trolling-success.gif); /* Replace 'path/to/your/image.jpg' with your image file path */
   background-repeat: no-repeat;
-  background-size: cover;
-  /* Optional: Set width and height for the element to make the background visible */
-  height: 100%; /* Set width as needed */
+  background-size: contain; /* Use 'contain' to fit the entire image within the container */
+  background-position: center;
+  height: 730px;
+}
+
+.gif2 button{
+  position: fixed;
+  bottom: 20px; /* Adjust the distance from the bottom as needed */
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 
@@ -158,6 +165,11 @@ color: green;
 
 .white{
   color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
 }
 
 .head button {
