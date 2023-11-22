@@ -249,6 +249,7 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		if guess == wordToGuess && !lost {
 			calculateScoreFinal()
+			win = true
 			http.Redirect(w, r, "/win", http.StatusSeeOther)
 		} else {
 			incorrectGuessCount += 2

@@ -178,7 +178,7 @@ func calculateScoreLose() {
 
 func calculateScoreFinal() {
 
-	score = score + 5*countUnderscores(currentState)
+	score = score + 25*countUnderscores(currentState)
 }
 
 func countUnderscores(arr []string) int {
