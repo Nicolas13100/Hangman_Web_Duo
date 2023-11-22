@@ -168,8 +168,8 @@ func calculateScoreLose() {
 	case "Moyen":
 		score -= 7
 	case "Diffile":
-		score -= 10
-	case "Halloween":
+		score -= 5
+	case "Christmas":
 		score -= 5
 	default:
 		fmt.Println("Can't find difficulty")
