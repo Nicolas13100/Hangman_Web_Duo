@@ -123,19 +123,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	lefts := 8 - incorrectGuessCount
-	data := struct {
-		Logged              bool
-		Started             bool
-		PlayerName          string
-		CurrentState        []string
-		IncorrectGuesses    []string
-		IncorrectGuessCount int
-		Difficulty          string
-		Invalidguess        string
-		Points              int
-		Score               int
-		TriesLeft           int
-	}{
+	data := cli.Data{
 		Logged:              logged,
 		Started:             started,
 		PlayerName:          playerName,

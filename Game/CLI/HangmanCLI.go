@@ -8,6 +8,20 @@ import (
 	"time"
 )
 
+type Data struct {
+	Logged              bool
+	Started             bool
+	PlayerName          string
+	CurrentState        []string
+	IncorrectGuesses    []string
+	IncorrectGuessCount int
+	Difficulty          string
+	Invalidguess        string
+	Points              int
+	Score               int
+	TriesLeft           int
+}
+
 func Hangmanwin(currentState []string, wordToGuess string) bool {
 	// Check if all letters have been guessed
 	if stringifyStringSlice(currentState) == wordToGuess && wordToGuess != "" {
