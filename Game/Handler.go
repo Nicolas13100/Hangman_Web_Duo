@@ -1,6 +1,7 @@
 package Hangman
 
 import (
+	cli "Hangman/Game/CLI"
 	"fmt"
 	"html/template"
 	"log"
@@ -100,7 +101,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Check if all letters have been guessed
-	if stringifyStringSlice(currentState) == wordToGuess && wordToGuess != "" {
+	if cli.Hangmanwin(currentState, wordToGuess) {
 		win = true
 		// If all letters have been guessed, redirect to the win page
 		http.Redirect(w, r, "/win", http.StatusSeeOther)
@@ -108,7 +109,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if the player has reached the maximum number of incorrect guesses
-	if incorrectGuessCount >= 8 {
+	if cli.HangmanLost(incorrectGuessCount) {
 		lost = true
 		// If yes, redirect the player to the lost page
 		http.Redirect(w, r, "/lost", http.StatusSeeOther)
@@ -182,14 +183,14 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 	language = r.Form.Get("language")
 	// Do something with the difficulty
 	// Load the word list based on difficulty
-	wordList, err := loadWordList(language, difficulty)
+	wordList, err := cli.LoadWordList(language, difficulty)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	// Randomly select a word from the list
-	wordToGuess = selectRandomWord(wordList)
+	wordToGuess = cli.SelectRandomWord(wordList)
 
 	logged = true
 	resetCurrentState()
@@ -221,7 +222,7 @@ func guessHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	guess := strings.ToUpper(r.Form.Get("guess"))
 
-	if len(guess) >= 1 && !isLetter(guess) {
+	if len(guess) >= 1 && !cli.IsLetter(guess) {
 		invalidguess = "Invalid guess"
 		http.Redirect(w, r, "/", http.StatusMovedPermanently)
 		return
