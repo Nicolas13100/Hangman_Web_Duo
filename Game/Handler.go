@@ -19,6 +19,7 @@ var (
 	logged              bool
 	lost                bool
 	win                 bool
+	gameUpdated         bool
 	guessedLetters      = make(map[string]bool)
 	incorrectGuessCount int
 	difficulty          string
@@ -160,6 +161,12 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 		renderTemplate(w, "start", autoNaming)
 		return
 	}
+
+	if gameUpdated {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
@@ -173,14 +180,16 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 	// Load the word list based on difficulty
 	wordList, err := cli.LoadWordList(language, difficulty)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		fmt.Println("Internal Server Error")
+		ResetUserValue()
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
 	// Randomly select a word from the list
 	wordToGuess = cli.SelectRandomWord(wordList)
 
-	logged = true
+	gameUpdated = true
 	resetCurrentState()
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -373,11 +382,23 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if err := loadUsersFromFile("users.json"); err != nil {
 		panic(err)
 	}
-	renderTemplate(w, "Login", nil)
+	// Check if there are query parameters in the URL
+	queryParams := r.URL.Query()
+	// Get a specific query parameter value by key
+	invalidParam := queryParams.Get("invalid")
+	var Invalid string
+	Invalid = ""
+	// Use the obtained query parameter value
+	if invalidParam != "" {
+		Invalid = "Invalid username or password"
+		invalidParam = ""
+	}
+
+	renderTemplate(w, "Login", Invalid)
 }
 
 func successLoginHandler(w http.ResponseWriter, r *http.Request) {
-	logged = true
+
 	if r.Method != http.MethodPost {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -388,18 +409,17 @@ func successLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	user, exists := users[username]
 	if !exists || !checkPasswordHash(password, user.Password) {
-		fmt.Println("Invalid username or password")
+		http.Redirect(w, r, "/login?invalid=true", http.StatusSeeOther)
 		return
 	}
-
+	logged = true
 	// Successfully logged in
 	// Handle further operations (e.g., setting session, redirecting, etc.)
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
-
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
-	resetUserValue()
+	ResetUserValue()
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -500,6 +520,6 @@ func changeLoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println("Password updated successfully.")
-	resetUserValue()
+	ResetUserValue()
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
