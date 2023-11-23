@@ -123,13 +123,24 @@ button:hover {
   background-color: #0056b3;
 }
 
+.invalid {
+  display: flex;
+  flex-direction: column;
+}
+
 /* Error message styling */
 .invalid p {
   color: red;
   font-style: italic;
   margin-top: 10px;
 }
-
+.invalid p:first-child {
+  margin-bottom: auto; /* Pushes the first paragraph to the top */
+}
+.link {
+  margin-left: 10px; /* Adjust this value as needed */
+  color: green;
+}
 .haut {
   display: flex;
 }
@@ -154,14 +165,10 @@ h2, h3{
     text-align: center;
 }
 
-.flex{
+.flex {
   display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.link {
-color: green;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .container {
