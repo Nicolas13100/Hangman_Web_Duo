@@ -27,6 +27,14 @@ body {
   /* Optional: Set width and height for the element to make the background visible */
   height: 100%; /* Set width as needed */
 }
+
+.GFgif {
+    background-image: url(/static/doodle_cover.gif); /* Replace 'path/to/your/image.jpg' with your image file path */
+    background-repeat: no-repeat;
+    background-size: cover;
+    /* Optional: Set width and height for the element to make the background visible */
+    height: 100%; /* Set width as needed */
+}
 .gif {
   background-image: url(/static/congratulations.gif); /* Replace 'path/to/your/image.jpg' with your image file path */
   background-repeat: no-repeat;
@@ -207,6 +215,28 @@ color: green;
   background-repeat: no-repeat;
   background-size: cover;
   color: red;
+}
+
+.left-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background-image: url('/static/sideTreelft.jpg'); /* Path to left image */
+  background-size: cover;
+  z-index: -1; /* Place it behind other content */
+}
+
+.right-background {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background-image: url('/static/sideTreeright.jpg'); /* Path to right image */
+  background-size: cover;
+  z-index: -1; /* Place it behind other content */
 }
 
 @media only screen and (max-width: 767px) {
