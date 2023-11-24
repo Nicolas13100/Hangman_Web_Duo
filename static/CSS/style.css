@@ -258,5 +258,4 @@ h2, h3{
     left: 50%; /* Position it from the left edge */
     transform: translateX(-50%); /* Center it horizontally */
   }
-
 }

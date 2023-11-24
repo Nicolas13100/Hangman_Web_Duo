@@ -269,6 +269,10 @@ func lostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/index", http.StatusSeeOther)
 		return
 	}
+	if win || !lost {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 	data := struct {
 		WordToGuess string
 		Difficulty  string
@@ -288,6 +292,10 @@ func winHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if !started {
 		http.Redirect(w, r, "/index", http.StatusSeeOther)
+		return
+	}
+	if !win || lost {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 	err0 := UpdateAndSaveGlobalData(username, score)
