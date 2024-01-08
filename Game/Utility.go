@@ -340,6 +340,7 @@ func globalextractVariablesFromJSONFile() (GlobalData, error) {
 
 	return globalData, nil
 }
+
 func updateUserCredentials(name, oldPassword, newPassword string) error {
 	// Read the JSON file into memory
 	raw, err := os.ReadFile("users.json")
